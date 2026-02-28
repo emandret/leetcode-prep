@@ -1,0 +1,6 @@
+#include "KthLargestElementInAnArray.hpp"
+
+int KthLargestElementInAnArray::findKthLargest(vector<int>& nums, int k)
+{
+    return 0;
+}
