@@ -5,18 +5,18 @@
 
 using namespace std;
 
-struct CompareFreqs {
+struct LessThanFunctor {
     bool operator()(const pair<int, int>& a, const pair<int, int>& b)
     {
         return a.second < b.second;
     }
 };
 
-template <typename T, typename LessThanFunctor>
+template <typename T, typename Compare>
 struct MinHeap {
   private:
     vector<T> heap;
-    LessThanFunctor less_than;
+    Compare less_than;
 
     void swap(T& a, T& b)
     {
@@ -149,8 +149,8 @@ vector<int> TopKFrequentElements::topKFrequent(vector<int>& nums, int k)
     }
 
     // For each (integer, frequency) pair, keep the k largest frequencies in a min-heap
-    MinHeap<pair<int, int>, CompareFreqs> topk;
-    CompareFreqs less_than;
+    MinHeap<pair<int, int>, LessThanFunctor> topk;
+    LessThanFunctor less_than;
 
     // Iterate over the unordered_map => O(n)
     for (auto [key, count] : freqs) {
