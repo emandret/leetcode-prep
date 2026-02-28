@@ -20,12 +20,12 @@ struct CharStack {
         {
         }
 
-        Code get_code()
+        Code getCode()
         {
             return code;
         }
 
-        const char *get_message()
+        const char *getMessage()
         {
             return message.c_str();
         }
@@ -59,7 +59,7 @@ struct CharStack {
         cur = -1;
     }
 
-    void grow_capacity()
+    void growCapacity()
     {
         int new_cap = cap + alloc_step;
         char *new_arr = static_cast<char *>(realloc(arr, new_cap * sizeof(*arr)));
@@ -75,7 +75,7 @@ struct CharStack {
     void push(char c)
     {
         if ((cur + 1) >= cap) {
-            grow_capacity();
+            growCapacity();
         }
         arr[++cur] = c;
     }
