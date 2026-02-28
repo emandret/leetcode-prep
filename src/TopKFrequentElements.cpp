@@ -114,6 +114,10 @@ struct MinHeap {
 
     void pop()
     {
+        if (heap.size() == 0) {
+            return;
+        }
+
         // Crush the root node with the last value
         *heap.begin() = heap.back();
 
@@ -148,20 +152,20 @@ vector<int> TopKFrequentElements::topKFrequent(vector<int>& nums, int k)
         ++freqs[*it];
     }
 
-    // For each (integer, frequency) pair, keep the k largest frequencies in a min-heap
-    MinHeap<pair<int, int>, LessThanFunctor> topk;
-    LessThanFunctor less_than;
+    // For each (integer, frequency) pair, keep the k largest frequencies in
+    // a min-heap
+    MinHeap<pair<int, int>, LessThanFunctor> pq;
 
     // Iterate over the unordered_map => O(n)
     for (auto [key, count] : freqs) {
         // Empty heap, push first count
-        if (topk.empty()) {
-            topk.push(pair<int, int>(key, count));
+        if (pq.empty()) {
+            pq.push(pair<int, int>(key, count));
             continue;
         }
 
         // Check if smallest >= count; if true, continue
-        if (topk.top().second >= count) {
+        if (pq.top().first == key && pq.top().second >= count) {
             continue;
         }
 
@@ -169,24 +173,24 @@ vector<int> TopKFrequentElements::topKFrequent(vector<int>& nums, int k)
 
         // Place count at the bottom of the heap; heapifyUp will ensure
         // the min count is bubbled up to root level
-        topk.push(pair<int, int>(key, count));
+        pq.push(pair<int, int>(key, count));
 
-        // If size > k, pop the root (smallest count); heapifyDown will ensure
-        // the max count is bubbled down to leaf level
-        if (topk.size() > k) {
-            topk.pop();
+        // If size > k, pop the root (smallest count); heapifyDown will
+        // ensure the max count is bubbled down to leaf level
+        if (pq.size() > k) {
+            pq.pop();
         }
     }
 
     // Build the return vector
     vector<int> ret;
     for (auto i = 0; i < k; ++i) {
-        ret.push_back(topk.top().first);
-        topk.pop();
+        ret.push_back(pq.top().first);
+        pq.pop();
     }
 
     // Sort in ascending order
-    std::sort(ret.begin(), ret.end(), [](const int& a, const int& b) -> bool {
+    sort(ret.begin(), ret.end(), [](const int& a, const int& b) -> bool {
         return a < b;
     });
 
