@@ -4,7 +4,7 @@
 
 int KthLargestElementInAnArray::findKthLargest(vector<int>& nums, int k)
 {
-    // priority_queue is a max-heap; larger values are at the top
+    // By default, priority_queue behaves as a max-heap; larger value => higher priority
     priority_queue<int> pq;
 
     // Push all ints onto the priority_queue
