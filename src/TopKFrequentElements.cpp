@@ -14,7 +14,7 @@ struct GreaterThanOrEqualFunctor {
 };
 
 template <typename T, typename Container, typename Compare>
-struct BinaryHeap {
+struct PriorityQueue {
   private:
     Container heap;
     Compare is_lower_priority;
@@ -95,11 +95,11 @@ struct BinaryHeap {
     }
 
   public:
-    BinaryHeap()
+    PriorityQueue()
     {
     }
 
-    ~BinaryHeap()
+    ~PriorityQueue()
     {
     }
 
@@ -155,7 +155,7 @@ vector<int> TopKFrequentElements::topKFrequent(vector<int>& nums, int k)
 
     // For each (integer, frequency) pair, keep the k largest frequencies in
     // a min-heap
-    BinaryHeap<pair<int, int>, vector<pair<int, int>>, GreaterThanOrEqualFunctor> pq;
+    PriorityQueue<pair<int, int>, vector<pair<int, int>>, GreaterThanOrEqualFunctor> pq;
 
     // Iterate over the unordered_map => O(n)
     for (auto [key, count] : freqs) {
