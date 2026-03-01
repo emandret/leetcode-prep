@@ -10,7 +10,7 @@ using namespace std;
 template <typename T>
 struct Stack {
     // Exception inherits exception
-    struct Exception : public exception {
+    struct Exception : public std::exception {
         enum class Code {
             StackUnderflow,
             OutOfMemory,
