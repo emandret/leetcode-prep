@@ -6,18 +6,18 @@
 
 using namespace std;
 
-struct LessThanFunctor {
+struct GreaterThanOrEqualFunctor {
     bool operator()(const pair<int, int>& a, const pair<int, int>& b)
     {
-        return a.second < b.second;
+        return a.second >= b.second;
     }
 };
 
-template <typename T, typename Compare>
-struct MinHeap {
+template <typename T, typename Container, typename Compare>
+struct BinaryHeap {
   private:
-    vector<T> heap;
-    Compare less_than;
+    Container heap;
+    Compare is_lower_priority;
 
     void swap(T& a, T& b)
     {
@@ -26,7 +26,7 @@ struct MinHeap {
         b = tmp;
     }
 
-    int smallestChild(int current)
+    int priorityChild(int current)
     {
         auto left = current * 2 + 1;
         auto right = current * 2 + 2;
@@ -41,11 +41,11 @@ struct MinHeap {
             return left;
         }
 
-        // Return the smallest child node
-        if (less_than(heap[left], heap[right])) {
-            return left;
+        // Return the highest priority child node
+        if (is_lower_priority(heap[left], heap[right])) {
+            return right;
         }
-        return right;
+        return left;
     }
 
     void heapifyUp(int current)
@@ -60,8 +60,8 @@ struct MinHeap {
             // e.g. floor((current - 1) / 2)
             auto parent = (current - 1) / 2;
 
-            // Ensure current >= parent; if true, no need to go further up
-            if (!less_than(heap[current], heap[parent])) {
+            // If current node has lower priority, no need to go further up
+            if (is_lower_priority(heap[current], heap[parent])) {
                 break;
             }
 
@@ -75,41 +75,41 @@ struct MinHeap {
     void heapifyDown(int current)
     {
         for (;;) {
-            auto smallest = smallestChild(current);
+            auto best = priorityChild(current);
 
             // No child nodes, stop here
-            if (smallest == -1) {
+            if (best == -1) {
                 break;
             }
 
-            // Ensure smallest >= current; if true, no need to go further down
-            if (!less_than(heap[smallest], heap[current])) {
+            // If best child has lower priority, no need to go further down
+            if (is_lower_priority(heap[best], heap[current])) {
                 break;
             }
 
-            swap(heap[current], heap[smallest]);
+            swap(heap[current], heap[best]);
 
             // Go down one level
-            current = smallest;
+            current = best;
         }
     }
 
   public:
-    MinHeap()
+    BinaryHeap()
     {
     }
 
-    ~MinHeap()
+    ~BinaryHeap()
     {
     }
 
     void push(const T& n)
     {
         // First we insert the new value at the end of the heap
-        // We respect the shape property - the tree must be packed left-to-right
+        // We respect the shape property; the tree must be packed left-to-right
         heap.push_back(n);
 
-        // Satisfy the heap property by ensuring n >= parent up to the root
+        // Satisfy the heap property by ensuring the highest priority nodes are at the top
         heapifyUp(heap.size() - 1);
     }
 
@@ -155,7 +155,7 @@ vector<int> TopKFrequentElements::topKFrequent(vector<int>& nums, int k)
 
     // For each (integer, frequency) pair, keep the k largest frequencies in
     // a min-heap
-    MinHeap<pair<int, int>, LessThanFunctor> pq;
+    BinaryHeap<pair<int, int>, vector<pair<int, int>>, GreaterThanOrEqualFunctor> pq;
 
     // Iterate over the unordered_map => O(n)
     for (auto [key, count] : freqs) {
