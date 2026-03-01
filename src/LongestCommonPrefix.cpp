@@ -15,7 +15,7 @@ string LongestCommonPrefix::longestCommonPrefix(vector<string>& strs)
     // Sort strings lexicographically in ascending order
     // std::sort uses insertion sort (time complexity O(n^2) in the worst case) for small arrays <= 16 elements
     // Otherwise it uses quicksort or heapsort (time complexity O(n*log(n)) in the average case)
-    std::sort(strs.begin(), strs.end(), [](const string& a, const string& b) -> bool {
+    sort(strs.begin(), strs.end(), [](const string& a, const string& b) -> bool {
         return a < b;
     });
 

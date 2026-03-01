@@ -7,22 +7,24 @@
 
 using namespace std;
 
-struct CharStack {
+template <typename T>
+struct Stack {
+    // Exception inherits exception
     struct Exception : public exception {
         enum class Code {
             StackUnderflow,
             OutOfMemory,
         };
 
-        Exception(Code code, string message)
-            : code(code)
-            , message(std::move(message))
+        Exception(Code err, string msg)
+            : error(err)
+            , message(std::move(msg))
         {
         }
 
         Code getCode()
         {
-            return code;
+            return error;
         }
 
         const char *getMessage()
@@ -31,7 +33,7 @@ struct CharStack {
         }
 
       private:
-        Code code;
+        Code error;
         string message;
     };
 
@@ -39,12 +41,12 @@ struct CharStack {
     static constexpr int alloc_step = 8;
 
     // Public fields
-    char *arr; // Stack backing array
-    int cap;   // Stack capacity
-    int cur;   // Index of top element
+    T *arr;  // Stack backing array
+    int cap; // Stack capacity
+    int cur; // Index of top element
 
     // Constructor
-    CharStack()
+    Stack()
         : arr(nullptr)
         , cap(0)
         , cur(-1)
@@ -52,7 +54,7 @@ struct CharStack {
     }
 
     // Destructor runs automatically when object goes out of scope
-    ~CharStack()
+    ~Stack()
     {
         free(arr);
         cap = 0;
@@ -62,33 +64,33 @@ struct CharStack {
     void growCapacity()
     {
         int new_cap = cap + alloc_step;
-        char *new_arr = static_cast<char *>(realloc(arr, new_cap * sizeof(*arr)));
+        auto *new_arr = static_cast<T *>(realloc(arr, new_cap * sizeof(*arr)));
 
         if (new_arr == nullptr) {
-            throw CharStack::Exception(CharStack::Exception::Code::OutOfMemory, "error: memory allocation failed");
+            throw Stack::Exception(Stack::Exception::Code::OutOfMemory, "error: memory allocation failed");
         }
 
         arr = new_arr;
         cap = new_cap;
     }
 
-    void push(char c)
+    void push(const T& v)
     {
         if ((cur + 1) >= cap) {
             growCapacity();
         }
-        arr[++cur] = c;
+        arr[++cur] = v;
     }
 
     void pop()
     {
         if (cur < 0) {
-            throw CharStack::Exception(CharStack::Exception::Code::StackUnderflow, "error: stack underflow");
+            throw Stack::Exception(Stack::Exception::Code::StackUnderflow, "error: stack underflow");
         }
         --cur;
     }
 
-    char top()
+    T top()
     {
         if (cur < 0) {
             return -1;
@@ -115,28 +117,28 @@ struct CharStack {
 
 bool ValidParentheses::isValid(string s)
 {
-    CharStack stack;
+    Stack<char> st;
 
     for (const char c : s) {
         // Push opening parentheses to the stack
         if (c == '(' || c == '[' || c == '{') {
-            stack.push(c);
+            st.push(c);
             continue;
         }
         // Pop matching parentheses from the stack, or fail
         if (c == ')' || c == ']' || c == '}') {
             // Stack cannot be empty here
-            if (stack.empty()) {
+            if (st.empty()) {
                 return 0;
             }
-            char cc = stack.top();
+            char cc = st.top();
             if ((cc == '(' && c != ')') || (cc == '[' && c != ']') || (cc == '{' && c != '}')) {
                 return 0;
             }
-            stack.pop();
+            st.pop();
         }
     }
 
     // Expect the stack to be empty here
-    return stack.empty();
+    return st.empty();
 }
