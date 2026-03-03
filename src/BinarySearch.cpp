@@ -12,6 +12,7 @@ int BinarySearch::search(vector<int>& nums, int target)
 
         if (target > nums[mid]) {
             left = mid + 1;
+            continue;
         }
         if (target < nums[mid]) {
             right = mid;
